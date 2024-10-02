@@ -22,15 +22,11 @@ async function checkConnection() {
   }
 }
 
-async function query(sql, params = []) {  // Add default value for params
+async function query(sql, params) {
   console.log('Executing SQL:', sql);
   
-  if (params && params.length > 0) {
-    const maskedParams = params.map(param => typeof param === 'string' ? '***' : param);
-    console.log('With params:', maskedParams);
-  } else {
-    console.log('No params provided');
-  }
+  const maskedParams = params.map(param => typeof param === 'string' ? '***' : param);
+  console.log('With params:', maskedParams);
 
   try {
     const [rows] = await pool.execute(sql, params);
