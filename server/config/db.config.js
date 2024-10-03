@@ -22,7 +22,7 @@ async function checkConnection() {
   }
 }
 
-async function query(sql, params = []) {  // Add default value for params
+async function query(sql, params = []) {
   console.log('Executing SQL:', sql);
   
   if (params && params.length > 0) {
@@ -33,12 +33,13 @@ async function query(sql, params = []) {  // Add default value for params
   }
 
   try {
-    const [rows] = await pool.execute(sql, params);
-    console.log('Query result:', rows);
-    return rows; // Return only rows if fields are not needed
+    const [rows, fields] = await pool.execute(sql, params);
+    console.log('Query result type:', Array.isArray(rows) ? 'Array' : typeof rows);
+    console.log('Number of rows:', Array.isArray(rows) ? rows.length : 'N/A');
+    return rows;
   } catch (error) {
     console.error('Database query error:', error.message);
-    throw error; // Rethrow error for upstream handling
+    throw error;
   }
 }
 

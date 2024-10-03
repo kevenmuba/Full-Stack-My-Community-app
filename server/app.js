@@ -8,6 +8,8 @@ require('dotenv').config();
 const cors = require('cors');
 // Import the database module
 const db = require('./config/db.config'); // Adjust the path if necessary
+const multer = require('multer');
+const path = require('path');
 const router= require('./routes')
 
 // Set up the CORS options to allow requests from our front-end only
@@ -28,6 +30,7 @@ app.use(cors(corsOptions));
 
 // Add the express.json middleware to the application
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Add the sanitizer to the express middleware 
 //app.use(sanitize);
