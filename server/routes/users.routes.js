@@ -6,6 +6,7 @@ const usersController = require('../controllers/users.controller');
 
 // Create a new user
 router.post('/api/users', usersController.createUser);
+router.get('/api/users/check-email', usersController.checkEmailUniqueness);
 
 // Login a user
 router.post('/api/login', usersController.loginUser);
@@ -33,6 +34,10 @@ router.put('/api/users/:id', usersController.updateUser);
 
 // Delete a user
 router.delete('/api/users/:id', usersController.deleteUser);
+
+
+
+
 
 
 

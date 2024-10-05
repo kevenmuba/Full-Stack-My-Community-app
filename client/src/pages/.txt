@@ -1,0 +1,101 @@
+import React, { useState } from 'react';
+import { Form, Input, Button, Select, message } from 'antd';
+import { Link } from 'react-router-dom'; // Import Link for routing
+import axios from 'axios';
+
+const { Option } = Select;
+
+const EmployeeForm = () => {
+  const [form] = Form.useForm();
+  const [submissionStatus, setSubmissionStatus] = useState(null); // State to track submission status
+
+  const onFinish = async (values) => {
+    try {
+      const response = await axios.post('http://localhost:4000/api/users', values);
+      message.success('User created successfully!'); // Display success message
+      setSubmissionStatus('success'); // Update submission status
+      form.resetFields(); // Reset form fields after successful submission
+    } catch (error) {
+      message.error('Error creating user: ' + (error.response?.data?.message || error.message)); // Display error message
+      setSubmissionStatus('error'); // Update submission status
+    }
+  };
+
+  return (
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <Form
+        form={form}
+        name="create_user"
+        onFinish={onFinish}
+        className="bg-white p-8 rounded shadow-md w-96"
+      >
+        <h2 className="text-xl font-bold mb-4 text-gray-800">Create User</h2>
+
+        {/* Display Submission Status */}
+        {submissionStatus === 'success' && (
+          <div className="mb-4 text-green-600">User created successfully!</div>
+        )}
+        {submissionStatus === 'error' && (
+          <div className="mb-4 text-red-600">Failed to create user. Please try again.</div>
+        )}
+
+        <Form.Item
+          name="username"
+          rules={[
+            { required: true, message: 'Please input your username!' },
+            {
+              pattern: /^[a-zA-Z][a-zA-Z0-9]*$/,
+              message: 'Username must start with a letter and can only contain letters and numbers',
+            },]}
+        >
+          <Input placeholder="Username" className="border border-gray-300 rounded" />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}
+        >
+          <Input placeholder="Email" className="border border-gray-300 rounded" />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <Input.Password placeholder="Password" className="border border-gray-300 rounded" />
+        </Form.Item>
+
+        <Form.Item
+          name="role"
+          rules={[{ required: true, message: 'Please select a role!' }]}
+        >
+          <Select placeholder="Select Role" className="border border-gray-300 rounded">
+            <Option value="admin">Admin</Option>
+            <Option value="social_media_manager">Social Media Manager</Option>
+            <Option value="salesman">Salesman</Option>
+            <Option value="writer">Writer</Option>
+            <Option value="hr">HR</Option>
+            <Option value="customer">Customer</Option>
+            <Option value="accountant">Accountant</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" className="w-full bg-blue-500 hover:bg-blue-600">
+            Create User
+          </Button>
+        </Form.Item>
+
+        {/* Link to Login Page */}
+        <div className="text-center mt-4">
+          <span className="text-gray-800">
+            Already have an account? 
+            <Link to="/login" className="text-blue-500 hover:text-blue-600 ml-1">Login here</Link>
+          </span>
+        </div>
+      </Form>
+    </div>
+  );
+};
+
+export default EmployeeForm;

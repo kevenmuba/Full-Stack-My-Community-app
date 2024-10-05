@@ -4,12 +4,39 @@ const usersService = require('../services/users.service');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 
+
 const createUser = async (req, res) => {
     const { username, email, password, role } = req.body;
 
-    // Validation rules...
+    // Basic validation
+    if (!username || !email || !password || !role) {
+        return res.status(400).json({ error: 'All fields are required.' });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format.' });
+    }
+
+    // Password strength validation
+    if (password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+    }
+
+    // Role validation
+    const validRoles = ['admin', 'social_media_manager', 'salesman', 'writer', 'hr', 'customer', 'accountant'];
+    if (!validRoles.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role.' });
+    }
     
     try {
+        // Check if the email is unique
+        const isUnique = await usersService.checkEmailUniqueness(email);
+        if (!isUnique) {
+            return res.status(400).json({ error: 'Email is already in use.' });
+        }
+
         const user = await usersService.createUser({ username, email, password, role });
         
         // Optionally issue a JWT here if immediate login is desired
@@ -17,10 +44,13 @@ const createUser = async (req, res) => {
         
         res.status(201).json({ message: 'User created successfully', user, token });
     } catch (error) {
-        // Error handling...
+        console.error('Error creating user:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ error: 'Email is already in use.' });
+        }
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 };
-
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -51,7 +81,7 @@ const loginUser = async (req, res) => {
         res.status(200).json({
             message: 'Login successful',
             token,
-            user: { id: user.id, username: user.username, email: user.email } // Return relevant user data
+            user: { id: user.id, username: user.username, email: user.email,role:user.role } // Return relevant user data
         });
     } catch (error) {
         console.error('Error logging in:', error);
@@ -198,6 +228,30 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const checkEmailUniqueness = async (req, res) => {
+    const { email } = req.query;
+
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    try {
+        const isUnique = await usersService.checkEmailUniqueness(email);
+        console.log('Is email unique:', isUnique);
+        
+        if (isUnique) {
+            console.log('Sending unique email response');
+            return res.json({ isUnique: true, message: 'Email is available' });
+        } else {
+            console.log('Sending non-unique email response');
+            return res.json({ isUnique: false, message: 'Email is already in use' });
+        }
+    } catch (error) {
+        console.error('Error checking email uniqueness:', error);
+        return res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    }
+};
+
 
 module.exports = {
     createUser,
@@ -209,7 +263,8 @@ module.exports = {
     getOnlyCustomers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    checkEmailUniqueness
    
 
 };

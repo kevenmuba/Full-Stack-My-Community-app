@@ -178,6 +178,23 @@ const deleteUser = async (id) => {
     }
 };
 
+const checkEmailUniqueness = async (email) => {
+    const sql = 'SELECT id, username, email, role, created_at FROM users WHERE email = ?';
+    const params = [email];
+
+    try {
+        const result = await db.query(sql, params);
+        console.log('Executing SQL:', sql);
+        console.log('With params:', params);
+        console.log('Query result type:', typeof result);
+        console.log('Number of rows:', result.length);
+        return result.length === 0; // Returns true if email is unique (not found in database)
+    } catch (error) {
+        console.error('Database error:', error);
+        throw error;
+    }
+};
+
 
 
 module.exports = {
@@ -192,6 +209,7 @@ module.exports = {
     getUserById,
     getOnlyCustomers,
     updateUser,
-    deleteUser
+    deleteUser,
+    checkEmailUniqueness
 
 };

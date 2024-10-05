@@ -1,0 +1,10 @@
+/* custom.css */
+.ant-menu-item-selected {
+  background-color: #B039CC !important; /* Change this to your desired color */
+  color: white !important; /* Optional: Change text color for better contrast */
+ 
+}
+
+.ant-menu-item-selected:hover {
+  background-color: #A030B0 !important; /* Optional: Change hover color when selected */
+}
