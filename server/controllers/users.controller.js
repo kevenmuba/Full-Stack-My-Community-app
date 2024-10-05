@@ -40,7 +40,7 @@ const createUser = async (req, res) => {
         const user = await usersService.createUser({ username, email, password, role });
         
         // Optionally issue a JWT here if immediate login is desired
-        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, username: user.username,role:user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
         
         res.status(201).json({ message: 'User created successfully', user, token });
     } catch (error) {
@@ -76,12 +76,12 @@ const loginUser = async (req, res) => {
         }
 
         // Generate JWT
-        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, username: user.username,role:user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({
             message: 'Login successful',
             token,
-            user: { id: user.id, username: user.username, email: user.email,role:user.role } // Return relevant user data
+            // user: { id: user.id, username: user.username, email: user.email,role:user.role }
         });
     } catch (error) {
         console.error('Error logging in:', error);

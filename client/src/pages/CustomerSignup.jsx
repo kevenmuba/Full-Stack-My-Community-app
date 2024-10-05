@@ -17,6 +17,8 @@ const CustomerForm = () => {
       const response = await axios.post('http://localhost:4000/api/users', customerData);
       message.success('Customer account created successfully!');
       form.resetFields();
+      const {token} = response.data
+      localStorage.setItem('token',token)
     } catch (error) {
       if (error.response && error.response.data) {
         setBackendError(error.response.data.error || 'An error occurred while creating the customer account.');

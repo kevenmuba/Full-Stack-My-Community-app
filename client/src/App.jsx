@@ -11,6 +11,7 @@ import { Route, Routes } from 'react-router-dom';
 import EmployeeForm from './pages/EmployeeSignup';
 import CustomerForm from './pages/CustomerSignup';
 import LoginForm from './pages/LoginForm';
+import TestContext from './components/testContext';
 
 
 
@@ -25,6 +26,7 @@ function App() {
     <Route path="/sign-up" element={<EmployeeForm/>} />
     <Route path="/sign-up-customer" element={<CustomerForm/>} />
     <Route path="/login" element={<LoginForm/>} />
+    <Route path="/test" element={<TestContext/>} />
 
 
     </Routes>
